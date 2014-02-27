@@ -3,6 +3,9 @@
 import numpy as np
 import cv2
 import glob
+import os
+
+IMAGE_PATH = os.path.join(os.getcwd(), "samples")
 
 class Camera:
  
@@ -40,7 +43,7 @@ def draw(img, corners, imgpts):
   cv2.line(img, corner, tuple(imgpts[2].ravel()), (255,0,0), 5)
   return img
 
-images = glob.glob('*.jpg')
+images = glob.glob(os.path.join(IMAGE_PATH, '*.jpg'))
 camera = Camera()
 camera.calibrateWithImages(images)
 axis = np.float32([[3, 0, 0], [0, 3, 0], [0, 0, -3]]).reshape(-1, 3)
