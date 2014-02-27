@@ -1,6 +1,5 @@
-#!/usr/bin/python
-#pyobjviewer.py
-
+#!C:\Python27\python.exe
+# -*- coding: utf-8 -*- 
 """
 pyobjviewer is a simple viewer for obj format 3D meshes. It has no dependencies
 on external 3D libraries such as opengl. It uses vanilla pygame, and provides

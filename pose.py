@@ -1,3 +1,5 @@
+#!C:\Python27\python.exe
+# -*- coding: utf-8 -*- 
 import numpy as np
 import cv2
 import glob
@@ -20,7 +22,7 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob('*.jpg')
+images = glob.glob('samples/*.jpg')
 
 for fname in images:
   img = cv2.imread(fname)
@@ -39,22 +41,20 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 
 axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
 
-for fname in glob.glob('left*.jpg'):
+for fname in glob.glob('samples/left*.jpg'):
   img = cv2.imread(fname)
   h,  w = img.shape[:2]
   newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx,dist,(w,h),1,(w,h))
   gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
   img = cv2.undistort(img, mtx, dist, None, newcameramtx)
-  cv2.imwrite(fname[:6]+'_undistorted.png', img)
+  cv2.imwrite("samples/"+fname[:6]+'_undistorted.png', img)
   ret, corners = cv2.findChessboardCorners(gray, (7,6),None)
 
   if ret == True:
     cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
     rvecs, tvecs, inliers = cv2.solvePnPRansac(objp, corners, newcameramtx, dist)
     imgpts, jac = cv2.projectPoints(axis, rvecs, tvecs, newcameramtx, dist)
-
-    print "it works"
     img = draw(img,corners,imgpts)
-    cv2.imwrite(fname[:6]+'.png', img)
+    cv2.imwrite("samples/"+fname[:6]+'.png', img)
 
 cv2.destroyAllWindows()
