@@ -427,7 +427,7 @@ def GetTetrahedron():
     o.canonicalView()
     return o
 
-def GetCube():
+def GetCube(position, size):
     """Construct a cube centered on (0,0,0) with edges of size 2.
     This cube is only made of triangles.
     """
@@ -454,6 +454,8 @@ def GetCube():
     o.faces.append( Triangle(6,2,4) )
     o.faces.append( Triangle(0,2,4) )
     o.canonicalView()
+    o.translate(Point3D(position[0], position[1], position[2]))
+    o.scale(size)
     return o
 
 def GetCubeQuad():
