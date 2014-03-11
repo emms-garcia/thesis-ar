@@ -1,50 +1,33 @@
 import zbar
-import numpy
 
 scanner = zbar.ImageScanner()
 scanner.parse_config('enable')
 
 #Scan for qr codes in image, return first
 def scan(image):
-    if len(image.shape) is 3:
-        height, width, _ = image.shape
-    else:
-        height, width = image.shape
-    print width, height
+    height, width = image.shape
     raw = image.tostring()
     image = zbar.Image(width, height, 'Y800', raw)
-    # scan the image for barcodes
     scanner.scan(image)
     for symbol in image:
-        print 'decoded', symbol.type, 'symbol', '"%s"' % symbol.data
-        print symbol.location
-    del image
+        return symbol
+    return None
 
 #Scan for all qr codes in image
 def scanAll(image):
-    symbol = None
-    return symbol
+    raw = image.tostring()
+    image = zbar.Image(width, height, 'Y800', raw)
+    scanner.scan(image)
+    symbols = []
+    for symbol in image:
+        symbols.append(symbol)
+    if len(symbols) > 0:
+        return symbols
+    else:
+        return None
 
 def main():
-    if len(argv) < 2: exit(1)
-
-
-
-    # wrap image data
-    image = zbar.Image(width, height, 'Y800', raw)
-
-    # scan the image for barcodes
-    scanner.scan(image)
-
-    # extract results
-    for symbol in image:
-        # do something useful with results
-        print 'decoded', symbol.type, 'symbol', '"%s"' % symbol.data
-        print symbol.location
-
-    # clean up
-    del(image)
-
+    pass
 
 if __name__ == "__main__":
     main()
