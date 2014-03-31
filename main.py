@@ -52,31 +52,27 @@ while ret:
   # OpenCV
   ret, frame = video_capture.read()
   if ret:
+    objects = []
     frame = cv2.resize(frame, FRAME_SIZE)
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     (thresh, bw_frame) = cv2.threshold(gray_frame, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    data = qr.scan(bw_frame)
-    if data:
-      v1, v2, v3, v4 = three.Vector2(data.location[0]), three.Vector2(data.location[1]), three.Vector2(data.location[2]), three.Vector2(data.location[3])
-      bb = three.Box2()
-      bb.setFromVectors([v1, v2, v3, v4])
-      cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
-      #cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
-      try:
-        object = MeshViewer.Object(models[str(data.data)])
-        mesh_center = object.getCenter()
-        # Normalizar, se dibuja desde el centro
-        center = three.Vector2((mesh_center.x + FRAME_SIZE[0]/2.0, mesh_center.y + FRAME_SIZE[1]/2.0))
-        offset = bb.center.sub(center)
-        object.translate(MeshViewer.Point3D(offset.x, offset.y, 0))
-        #print object.getCenter()
-        #print object.getCenter()
-      except Exception as e:
-        print e
-        object = None
-        print "No model found for marker: "+data.data
-    else:
-      object = None
+    data_list = qr.scanAll(bw_frame)
+    if data_list:
+      for data in data_list:
+        v1, v2, v3, v4 = three.Vector2(data.location[0]), three.Vector2(data.location[1]), three.Vector2(data.location[2]), three.Vector2(data.location[3])
+        bb = three.Box2()
+        bb.setFromVectors([v1, v2, v3, v4])
+        cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
+        #cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
+        try:
+          objects.append(MeshViewer.Object(models[str(data.data)]))
+          mesh_center = objects[-1].getCenter()
+          # Normalizar, se dibuja desde el centro
+          center = three.Vector2((mesh_center.x + FRAME_SIZE[0]/2.0, mesh_center.y + FRAME_SIZE[1]/2.0))
+          offset = bb.center.sub(center)
+          objects[-1].translate(MeshViewer.Point3D(offset.x, offset.y, 0))
+        except Exception as e:
+          print "No model found for marker: "+data.data
     if DEBUG_CV: cv2.imshow("Camera Feed", frame)
   else:
     print "Video terminado"
@@ -84,6 +80,8 @@ while ret:
   # Pygame
   pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
   screen.blit(pygame_image, (0, 0))
-  if object: object.display(env3d)
+  if len(objects) > 0:
+    for object in objects:
+      object.display(env3d)
   pygame.display.update()
   clock.tick(fps)

@@ -20,6 +20,7 @@ def scan(image):
 
 #Scan for all qr codes in image
 def scanAll(image):
+  height, width = image.shape
   raw = image.tostring()
   image = zbar.Image(width, height, 'Y800', raw)
   scanner.scan(image)
