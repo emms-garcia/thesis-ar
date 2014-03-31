@@ -62,8 +62,9 @@ while ret:
       bb.setFromVectors([v1, v2, v3, v4])
       cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
       try:
-        object = MeshViewer.loadObj(models[str(data.data)])
+        object = MeshViewer.Object(models[str(data.data)])
       except Exception as e:
+        print e
         object = None
         print "No model found for marker: "+data.data
       if DEBUG_CV: cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
