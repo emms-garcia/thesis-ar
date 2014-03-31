@@ -61,13 +61,20 @@ while ret:
       bb = three.Box2()
       bb.setFromVectors([v1, v2, v3, v4])
       cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
+      #cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
       try:
         object = MeshViewer.Object(models[str(data.data)])
+        mesh_center = object.getCenter()
+        # Normalizar, se dibuja desde el centro
+        center = three.Vector2((mesh_center.x + FRAME_SIZE[0]/2.0, mesh_center.y + FRAME_SIZE[1]/2.0))
+        offset = bb.center.sub(center)
+        object.translate(MeshViewer.Point3D(offset.x, offset.y, 0))
+        #print object.getCenter()
+        #print object.getCenter()
       except Exception as e:
         print e
         object = None
         print "No model found for marker: "+data.data
-      if DEBUG_CV: cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
     else:
       object = None
     if DEBUG_CV: cv2.imshow("Camera Feed", frame)

@@ -182,6 +182,7 @@ class Object:
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def scale(self,v):
       for p3d in self.points: p3d.scale(v)
+    
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def translate(self,v):
       for i in range(len(self.points)): self.points[i]+=v
