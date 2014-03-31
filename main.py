@@ -1,18 +1,19 @@
 #!/usr/bin/python
+
+# Librerias usadas
 import cv2
 import qr
 import numpy as np
 import three
 import pygame
 
-
-#OpenCV
+# OpenCV
 FRAME_SIZE = (400, 300)
 DEBUG_CV = False
 PYGAME_INPUT = "input.png"
 video_capture = cv2.VideoCapture("samples/test_qr.mp4")
 
-#Pygame
+# Pygame
 pygame.init()
 pygame.display.set_caption("Main")
 screen = pygame.display.set_mode(FRAME_SIZE)
@@ -21,10 +22,10 @@ dt = 1.0/fps
 clock = pygame.time.Clock()
 black = (0, 0, 0)
 
-#Main Loop
+# Main Loop
 ret = True
 while ret:
-  #OpenCV
+  # OpenCV
   ret, frame = video_capture.read()
   if ret:
     frame = cv2.resize(frame, FRAME_SIZE)
@@ -40,9 +41,10 @@ while ret:
     if DEBUG_CV: cv2.imshow("Camera Feed", frame)
   else:
     print "Video terminado"
-  if DEBUG_CV: cv2.waitKey(30)
-  
-  #Pygame
-  screen.fill(black)
+  if DEBUG_CV: cv2.waitKey(30) 
+  # Pygame
+  image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
+  #screen.fill(black)
+  screen.blit(image, (0, 0))
   pygame.display.update()
   clock.tick(fps)

@@ -26,7 +26,6 @@ import sys
 import random, math, pygame
 from pygame.locals import * # KEYUP and such
 
-
 #
 # Main objects
 #
