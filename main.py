@@ -6,12 +6,36 @@ import qr
 import numpy as np
 import three
 import pygame
+import os
+import MeshViewer
+import random
+
+random.seed()
+
+class Env3D:
+  def __init__(self, screen, winsize):
+    self.winsize= winsize
+    self.zoom_factor = 1
+    self.light_vector_1 = MeshViewer.Point3D (random.random(),random.random(),random.random())
+    self.light_vector_1.normalize()
+    self.light_vector_2 = MeshViewer.Point3D (random.random(),random.random(),random.random())
+    self.light_vector_2.normalize()
+    self.screen = screen
+    self.wincenter = [winsize[0]/2, winsize[1]/2]
+    self.colorize = True
+
+# Utils
+SAMPLES_DIR = os.path.join("samples", "models")
+VIDEO_DIR = os.path.join("samples", "videos")
+models = {
+  "1": os.path.join(SAMPLES_DIR, "1.obj"),
+  "2": os.path.join(SAMPLES_DIR, "2.obj")
+}
 
 # OpenCV
 FRAME_SIZE = (400, 300)
 DEBUG_CV = False
-PYGAME_INPUT = "input.png"
-video_capture = cv2.VideoCapture("samples/test_qr.mp4")
+video_capture = cv2.VideoCapture(os.path.join(VIDEO_DIR, "test_qr.mp4"))
 
 # Pygame
 pygame.init()
@@ -21,7 +45,7 @@ fps = 60
 dt = 1.0/fps
 clock = pygame.time.Clock()
 black = (0, 0, 0)
-
+env3d = Env3D(screen, [FRAME_SIZE])
 # Main Loop
 ret = True
 while ret:
@@ -36,15 +60,19 @@ while ret:
       v1, v2, v3, v4 = three.Vector2(data.location[0]), three.Vector2(data.location[1]), three.Vector2(data.location[2]), three.Vector2(data.location[3])
       bb = three.Box2()
       bb.setFromVectors([v1, v2, v3, v4])
-      if DEBUG_CV: cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
+      cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
+      try:
+        object = MeshViewer.loadObj(models[str(data.data)])
+      except Exception as e:
+        print e
+        print "No model found for marker: "+data.data
       if DEBUG_CV: cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
     if DEBUG_CV: cv2.imshow("Camera Feed", frame)
   else:
     print "Video terminado"
   if DEBUG_CV: cv2.waitKey(30) 
   # Pygame
-  image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
-  #screen.fill(black)
-  screen.blit(image, (0, 0))
+  pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
+  screen.blit(pygame_image, (0, 0))
   pygame.display.update()
   clock.tick(fps)
