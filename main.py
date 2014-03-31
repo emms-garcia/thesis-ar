@@ -45,7 +45,7 @@ fps = 60
 dt = 1.0/fps
 clock = pygame.time.Clock()
 black = (0, 0, 0)
-env3d = Env3D(screen, [FRAME_SIZE])
+env3d = Env3D(screen, [FRAME_SIZE[0], FRAME_SIZE[1]])
 # Main Loop
 ret = True
 while ret:
@@ -64,9 +64,11 @@ while ret:
       try:
         object = MeshViewer.loadObj(models[str(data.data)])
       except Exception as e:
-        print e
+        object = None
         print "No model found for marker: "+data.data
       if DEBUG_CV: cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
+    else:
+      object = None
     if DEBUG_CV: cv2.imshow("Camera Feed", frame)
   else:
     print "Video terminado"
@@ -74,5 +76,6 @@ while ret:
   # Pygame
   pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
   screen.blit(pygame_image, (0, 0))
+  if object: object.display(env3d)
   pygame.display.update()
   clock.tick(fps)
