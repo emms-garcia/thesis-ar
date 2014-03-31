@@ -159,7 +159,8 @@ class Quad(Face):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Object:
-    """An object is a collection of points (object:Point) and faces
+    """
+    An object is a collection of points (object:Point) and faces
     (object:Faces). The faces are made of indices referencing the points
     array.
     An object can be read from a file, or created by code.
@@ -409,7 +410,6 @@ def GetIcosahedron():
     o.canonicalView()
     return o
 
-
 def GetTetrahedron():
     """Construct a tetrahedron"""
     o = Object()
@@ -481,7 +481,6 @@ def GetCubeQuad():
     o.canonicalView()
     return o
 
-
 def GetGeode(power=1):
     """return a Geode made starting from a Icosahedron, where each edge has
     been splitted 2^power times. The created points have been placed on the
@@ -523,7 +522,6 @@ def Geodise(o):
         newo.faces.append( Triangle(z,y,c) )
 
     return newo
-
 
 def sphere_point(i,j,N,M):
     teta=math.pi*i/N
@@ -613,7 +611,7 @@ def LotTetra():
     return object
 
 class Env3D:
-    def __init__(self,screen,winsize):
+    def __init__(self, screen, winsize):
     	self.winsize= winsize
     	self.zoom_factor = 1
     	self.light_vector_1 = Point3D (random.random(),random.random(),random.random())
@@ -763,7 +761,6 @@ def main():
 
     #interactive(env3d, MainObject)
     animate(env3d, MainObject)
-
 
 
 # if python says run, then we should run
