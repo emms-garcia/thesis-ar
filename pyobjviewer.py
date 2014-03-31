@@ -62,7 +62,7 @@ from MeshViewer import Point3D, Face, Triangle, Quad, Object, Env3D
 loadObj = (MeshViewer.GetCube((0, 0, 0), 2))
 #o.canonicalView()
 
-#initialise pygame
+#initialise Pygame
 size = width, height = 600, 400
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("PyObjViewer - A simple 3D viewer")
