@@ -7,6 +7,7 @@ import three
 import pygame
 import os
 import MeshViewer
+import math
 
 # Utils
 SAMPLES_DIR = os.path.join("samples", "models")
@@ -46,11 +47,13 @@ def main():
     ret, frame = video_capture.read()
     # Se encontro un frame en el video
     if ret:
-      objects = []
+      # OpenCV
       frame = cv2.resize(frame, FRAME_SIZE)
       gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
       (thresh, bw_frame) = cv2.threshold(gray_frame, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
       data_list = qr.scanAll(bw_frame)
+      displayed_objects = []
+      
       # QR's encontrados
       if data_list:
         # Recorrer cada uno y marcarlo
@@ -59,26 +62,27 @@ def main():
           bb = three.Box2()
           bb.setFromVectors([v1, v2, v3, v4])
           cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0))
-          #cv2.putText(frame, data.data, (bb.center.x, bb.center.y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
           try:
             if data.data in found_markers:
               object = found_markers[data.data]
             else:
               object = MeshViewer.Object(models[str(data.data)])
               found_markers[str(data.data)] = object
+            displayed_objects.append(object)
             mesh_center = object.getCenter()
             # Normalizar, se dibuja desde el centro
             center = three.Vector2((mesh_center.x + FRAME_SIZE[0]/2.0, mesh_center.y + FRAME_SIZE[1]/2.0))
             offset = bb.center.sub(center)
             object.translate(MeshViewer.Point3D(offset.x, offset.y, 0))
+            object.rotateX(math.pi/20)
           except Exception as e:
             print "No model found for marker: " + data.data
+            
       # Pygame
       pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
-      screen.blit(pygame_image, (0, 0))
-      if len(found_markers) > 0:
-        for key in found_markers:
-          found_markers[key].display(env3d)
+      screen.blit(pygame_image, (0, 0)) 
+      for object in displayed_objects:
+        object.display(env3d)
       pygame.display.update()
       clock.tick(fps)
     # No mas frames
