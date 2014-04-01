@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8
 
 class Vector2:
 	def __init__(self, (x, y)):

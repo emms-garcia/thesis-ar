@@ -1,5 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8
 import os
 
+# Fix para windows
 zbar_path = os.path.join(os.environ['ProgramFiles'], 'zbar', 'bin')
 os.environ['PATH'] = "{0};{1}".format(os.environ['PATH'], zbar_path)
 

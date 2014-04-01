@@ -1,13 +1,14 @@
 #!/usr/bin/python
-
+# -*- coding: utf-8
 # Librerias usadas
 import cv2
-import qr
-import three
+import lib.qr as qr
+import lib.three as three
+import lib.MeshViewer as MeshViewer
 import pygame
 import os
-import MeshViewer
 import math
+import sys
 
 # Utils
 SAMPLES_DIR = os.path.join("samples", "models")
@@ -23,13 +24,14 @@ models = {
 found_markers = {}
 
 # OpenCV
-FRAME_SIZE = (400, 300)
+FRAME_SIZE = (600, 400)
 DEBUG_CV = False
 
 # Pygame
-fps = 60
+fps = 30
 dt = 1.0/fps
 black = (0, 0, 0)
+white = (255, 255, 255)
 
 # Main Loop
 def main():
@@ -50,7 +52,9 @@ def main():
       # OpenCV
       frame = cv2.resize(frame, FRAME_SIZE)
       gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+      cv2.imwrite("gray.png", gray_frame)
       (thresh, bw_frame) = cv2.threshold(gray_frame, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+      cv2.imwrite("bw.png", bw_frame)
       data_list = qr.scanAll(bw_frame)
       displayed_objects = []
       
@@ -81,6 +85,7 @@ def main():
       # Pygame
       pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
       screen.blit(pygame_image, (0, 0)) 
+      #screen.fill(white)
       for object in displayed_objects:
         object.display(env3d)
       pygame.display.update()
