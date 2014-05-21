@@ -2,9 +2,10 @@
 # -*- coding: utf-8
 import os
 
-# Fix para windows
-zbar_path = os.path.join(os.environ['ProgramFiles'], 'zbar', 'bin')
-os.environ['PATH'] = "{0};{1}".format(os.environ['PATH'], zbar_path)
+# Fix for Windows, add Zbar to the Path
+if os.name is "nt":
+  zbar_path = os.path.join(os.environ['ProgramFiles'], 'zbar', 'bin')
+  os.environ['PATH'] = "{0};{1}".format(os.environ['PATH'], zbar_path)
 
 import zbar
 
