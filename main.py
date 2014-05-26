@@ -97,7 +97,7 @@ def main():
     data_list = qr.scanAll(bw_frame)
     if TTEST == "2": TDATA["QR_DETECT"]["file"].write("%s %s\n"%(str(CUR_FRAME), str(time.time() - T_INITIAL_QR_DETECT)))
     
-    T_INITIAL_3DOVERLAP = time.time()
+    times_overlap = []
     displayed_objects = []
     # QR's encontrados
     if data_list:
@@ -109,6 +109,7 @@ def main():
         if data.data in models: cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0), 5)
         try:
           new = False
+          T_INITIAL_3DOVERLAP = time.time()
           if data.data in found_markers:
             object = found_markers[data.data]
           else:
@@ -125,10 +126,11 @@ def main():
           #object.rotateX(math.pi/5)
           object.rotateY(math.pi/15)
           new = False
+          times_overlap.push(T_INITIAL_3DOVERLAP - time.time())
         except Exception as e:
           pass#print "No model found for marker: " + data.data
     
-    if TTEST == "2": TDATA["3D_OVERLAP"]["file"].write("%s %s\n"%(str(CUR_FRAME), str(time.time() - T_INITIAL_3DOVERLAP)))
+    if TTEST == "2": TDATA["3D_OVERLAP"]["file"].write("%s %s\n"%(str(CUR_FRAME), str(sum(times_overlap))))
     # Pygame
     pygame_image = pygame.image.frombuffer(frame.tostring(), frame.shape[1::-1], "RGB")
     screen.blit(pygame_image, (0, 0)) 
