@@ -53,14 +53,8 @@ elif TTEST == "2":
 INPUT_VIDEO_FILE = INPUT_VIDEO_FILE if os.path.isfile(INPUT_VIDEO_FILE) else os.path.join(VIDEO_DIR, INPUT_VIDEO_FILE)
 
 models = {
-  "1": os.path.join(MODELS_DIR, "cube.obj"),
+  "1": os.path.join(MODELS_DIR, "3.obj"),
   "2": os.path.join(MODELS_DIR, "cube.obj"),
-  "3": os.path.join(MODELS_DIR, "cube.obj"),
-  "4": os.path.join(MODELS_DIR, "cube.obj"),
-  "5": os.path.join(MODELS_DIR, "cube.obj"),
-  "6": os.path.join(MODELS_DIR, "cube.obj"),
-  "7": os.path.join(MODELS_DIR, "cube.obj"),
-  "8": os.path.join(MODELS_DIR, "cube.obj"),
 }
 found_markers = {}
 
@@ -69,7 +63,7 @@ FRAME_SIZE = (500, 400)
 DEBUG_CV = False
 
 # False
-fps = 60
+fps = 30
 dt = 1.0/fps
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -112,7 +106,7 @@ def main():
         v1, v2, v3, v4 = three.Vector2(data.location[0]), three.Vector2(data.location[1]), three.Vector2(data.location[2]), three.Vector2(data.location[3])
         bb = three.Box2()
         bb.setFromVectors([v1, v2, v3, v4])
-        cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0), 5)
+        if data.data in models: cv2.rectangle(frame, (bb.min.x, bb.min.y), (bb.max.x, bb.max.y), (255, 0, 0), 5)
         try:
           new = False
           if data.data in found_markers:
@@ -126,9 +120,10 @@ def main():
           # Normalizar, se dibuja desde el centro
           center = three.Vector2((mesh_center.x + FRAME_SIZE[0]/2.0, mesh_center.y + FRAME_SIZE[1]/2.0))
           offset = bb.center.sub(center)
-          object.translate(MeshViewer.Point3D(offset.x + 50/2, offset.y + 50/2, 0))
-          object.rotateX(math.pi/5)
-          object.rotateY(math.pi/5)
+          if new: 
+            object.translate(MeshViewer.Point3D(offset.x, offset.y, 0))
+          #object.rotateX(math.pi/5)
+          object.rotateY(math.pi/15)
           new = False
         except Exception as e:
           pass#print "No model found for marker: " + data.data
@@ -140,6 +135,8 @@ def main():
     #screen.fill(white)
     for object in displayed_objects:
       object.display(env3d)
+    if CUR_FRAME == 1 or CUR_FRAME % 50 == 0:
+      pygame.image.save(screen, "frame_"+str(CUR_FRAME)+".png")
     pygame.display.update()
     clock.tick(fps)
     if TTEST == "2" or TTEST == "1": TDATA["ALL"]["file"].write("%s %s\n"%(str(CUR_FRAME), str(time.time() - T_INITIAL)))
